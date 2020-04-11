@@ -1,2 +1,5 @@
 discord
 dotenv
+logging
+json
+os
