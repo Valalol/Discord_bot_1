@@ -8,10 +8,13 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-from dotenv import load_dotenv
-load_dotenv()
-
-TOKEN = os.getenv('DISCORD_TOKEN')
+try : 
+    from dotenv import load_dotenv
+    load_dotenv()
+    TOKEN = os.getenv("DISCORD_TOKEN")
+except : 
+    from boto.s3.connection import S3Connection
+    s3 = S3Connection(os.environ['DISCORD_TOKEN'])
 
 def get_prefix(client, message):
     with open('prefixes.json','r') as f:
