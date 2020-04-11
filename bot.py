@@ -10,11 +10,10 @@ logger.addHandler(handler)
 
 try : 
     from dotenv import load_dotenv
-    load_dotenv()
-    TOKEN = os.getenv("DISCORD_TOKEN")
 except : 
-    from boto.s3.connection import S3Connection
-    s3 = S3Connection(os.environ['DISCORD_TOKEN'])
+    pass
+load_dotenv()
+TOKEN = os.getenv("DISCORD_TOKEN")
 
 def get_prefix(client, message):
     with open('prefixes.json','r') as f:
