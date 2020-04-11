@@ -9,7 +9,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 try : 
-    token = os.environ['DISCORD_TOKEN']
+    TOKEN = os.environ['DISCORD_TOKEN']
 except : 
     from dotenv import load_dotenv
     load_dotenv()
