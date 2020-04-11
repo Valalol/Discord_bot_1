@@ -9,11 +9,11 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 try : 
-    from dotenv import load_dotenv
+    token = os.environ['DISCORD_TOKEN']
 except : 
-    pass
-load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
+    from dotenv import load_dotenv
+    load_dotenv()
+    TOKEN = os.getenv("DISCORD_TOKEN")
 
 def get_prefix(client, message):
     with open('prefixes.json','r') as f:
