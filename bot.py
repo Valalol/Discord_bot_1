@@ -1,4 +1,3 @@
-
 import discord, logging, json, os
 from discord.ext import commands
 
@@ -70,7 +69,7 @@ async def changeprefix(ctx, prefix):
         json.dump(settings, f, indent = 4)
     await ctx.message.delete()
     try :
-        embed=discord.Embed(title='Préfix changé', color=0x00ff00)
+        embed=discord.Embed(title='Préfix changé', color=0x00ffff)
         embed.add_field(name=f"--------------------------------------", value=f"Le préfixe est désormais : {prefix}", inline=True)
         await ctx.send(embed=embed)
     except :
@@ -86,7 +85,7 @@ async def reload(ctx, extension):
         client.load_extension(f'cogs.{extension}')
     except :
         try :
-            embed=discord.Embed(title='Extension non rechargée', color=0xff0000)
+            embed=discord.Embed(title='Extension non rechargée', color=0xC0C0C0)
             embed.add_field(name=f"L'extension sivante n'a pas pu être rechargée.", value=f"{extension}", inline=True)
             await ctx.send(embed=embed)
         except :
@@ -113,7 +112,7 @@ async def activate(ctx, extension):
 
     else : 
         try :
-            embed=discord.Embed(title='Extension non activée', color=0xff0000)
+            embed=discord.Embed(title='Extension non activée', color=0xC0C0C0)
             embed.add_field(name=f"L'extension sivante n'a pas pu être activée.", value=f"{extension}", inline=True)
             await ctx.send(embed=embed)
         except :
@@ -141,7 +140,7 @@ async def desactivate(ctx, extension):
 
     else : 
         try :
-            embed=discord.Embed(title='Extension non désactivée', color=0xff0000)
+            embed=discord.Embed(title='Extension non désactivée', color=0xC0C0C0)
             embed.add_field(name=f"L'extension sivante n'a pas pu être désactivée.", value=f"{extension}", inline=True)
             await ctx.send(embed=embed)
         except :
@@ -149,7 +148,7 @@ async def desactivate(ctx, extension):
         return
     
     try :
-        embed=discord.Embed(title='Extension désactivée', color=0x00ff00)
+        embed=discord.Embed(title='Extension désactivée', color=0xff0000)
         embed.add_field(name=f"L'extension sivante est désormais désactivée.", value=f"{extension}", inline=True)
         await ctx.send(embed=embed)
     except :

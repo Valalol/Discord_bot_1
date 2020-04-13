@@ -41,7 +41,7 @@ class Commandes_Admin(commands.Cog):
         """Expulse un membre du serveur"""
         await user.kick(reason=reason)
         try :
-            embed=discord.Embed(title=f'{user} a été expulsé du serveur', color=0x00ff00)
+            embed=discord.Embed(title=f'{user} a été expulsé du serveur', color=0xff0000)
             embed.add_field(name=f"Modérateur", value=ctx.message.author)
             embed.add_field(name=f"Raison", value=reason)
             await ctx.send(embed=embed)
@@ -52,7 +52,7 @@ class Commandes_Admin(commands.Cog):
     async def kick_error(self, ctx, error):
         if isinstance (error, commands.MissingRequiredArgument):
             try :
-                embed=discord.Embed(title='Utilisateur non spécifié', color=0xff0000)
+                embed=discord.Embed(title='Utilisateur non spécifié', color=0xC0C0C0)
                 embed.add_field(name=f"Pour l'utilisation correcte de cette commande,", value=f"Tapez {ctx.prefix}help kick.", inline=True)
                 await ctx.send(embed=embed)
             except :
@@ -66,7 +66,7 @@ class Commandes_Admin(commands.Cog):
         """Bannit un membre du serveur"""
         await user.ban(reason=reason)
         try :
-            embed=discord.Embed(title=f'{user} a été banni du serveur', color=0x00ff00)
+            embed=discord.Embed(title=f'{user} a été banni du serveur', color=0xff0000)
             embed.add_field(name=f"Modérateur", value=ctx.message.author)
             embed.add_field(name=f"Raison", value=reason)
             await ctx.send(embed=embed)
@@ -77,7 +77,7 @@ class Commandes_Admin(commands.Cog):
     async def ban_error(self, ctx, error):
         if isinstance (error, commands.MissingRequiredArgument):
             try :
-                embed=discord.Embed(title='Utilisateur non spécifié', color=0xff0000)
+                embed=discord.Embed(title='Utilisateur non spécifié', color=0xC0C0C0)
                 embed.add_field(name=f"Pour l'utilisation correcte de cette commande,", value=f"Tapez {ctx.prefix}help ban.", inline=True)
                 await ctx.send(embed=embed)
             except :
@@ -105,7 +105,7 @@ class Commandes_Admin(commands.Cog):
     async def unban_error(self, ctx, error):
         if isinstance (error, commands.MissingRequiredArgument):
             try :
-                embed=discord.Embed(title='Utilisateur non spécifié', color=0xff0000)
+                embed=discord.Embed(title='Utilisateur non spécifié', color=0xC0C0C0)
                 embed.add_field(name=f"Pour l'utilisation correcte de cette commande,", value=f"Tapez {ctx.prefix}help unban.", inline=True)
                 await ctx.send(embed=embed)
             except :
@@ -121,7 +121,7 @@ class Commandes_Admin(commands.Cog):
             if role.name == "Muted":
                 await user.add_roles(role)
                 try :
-                    embed=discord.Embed(title=f'{user} a été mute du serveur', color=0x00ff00)
+                    embed=discord.Embed(title=f'{user} a été mute du serveur', color=0xFFBD00)
                     embed.add_field(name=f"Modérateur", value=ctx.message.author)
                     embed.add_field(name=f"Raison", value=reason)
                     await ctx.send(embed=embed)
@@ -136,7 +136,7 @@ class Commandes_Admin(commands.Cog):
             await channel.set_permissions(newRole, overwrite=overwrite)
         await user.add_roles(newRole)
         try :
-            embed=discord.Embed(title=f'{user} a été mute du serveur', color=0x00ff00)
+            embed=discord.Embed(title=f'{user} a été mute du serveur', color=0xFFBD00)
             embed.add_field(name=f"Modérateur", value=ctx.message.author)
             embed.add_field(name=f"Raison", value=reason)
             await ctx.send(embed=embed)
@@ -147,7 +147,7 @@ class Commandes_Admin(commands.Cog):
     async def mute_error(self, ctx, error):
         if isinstance (error, commands.MissingRequiredArgument):
             try :
-                embed=discord.Embed(title='Utilisateur non spécifié', color=0xff0000)
+                embed=discord.Embed(title='Utilisateur non spécifié', color=0xC0C0C0)
                 embed.add_field(name=f"Pour l'utilisation correcte de cette commande,", value=f"Tapez {ctx.prefix}help mute.", inline=True)
                 await ctx.send(embed=embed)
             except :
@@ -175,7 +175,7 @@ class Commandes_Admin(commands.Cog):
     async def unmute_error(self, ctx, error):
         if isinstance (error, commands.MissingRequiredArgument):
             try :
-                embed=discord.Embed(title='Utilisateur non spécifié', color=0xff0000)
+                embed=discord.Embed(title='Utilisateur non spécifié', color=0xC0C0C0)
                 embed.add_field(name=f"Pour l'utilisation correcte de cette commande,", value=f"Tapez {ctx.prefix}help unmute.", inline=True)
                 await ctx.send(embed=embed)
             except :
