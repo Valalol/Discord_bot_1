@@ -15,10 +15,12 @@ except :
     load_dotenv()
     TOKEN = os.getenv("DISCORD_TOKEN")
 
+extensionslist = ["admin", "fun"]
+
 def get_prefix(client, message):
-    with open('prefixes.json','r') as f:
-        prefixes = json.load(f)
-    return prefixes[str(message.guild.id)]
+    with open('settings.json','r') as f:
+        settings = json.load(f)
+    return settings[str(message.guild.id)]["prefix"]
 
 client = commands.Bot(command_prefix = get_prefix)
 
@@ -27,81 +29,52 @@ client = commands.Bot(command_prefix = get_prefix)
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
 
+    for filename in os.listdir('./cogs'):
+        if filename.endswith('.py'):
+            client.load_extension(f'cogs.{filename[:-3]}')
+
 @client.event
 async def on_guild_join(guild):
-    with open('prefixes.json','r') as f:
-        prefixes = json.load(f)
+    with open('settings.json','r') as f:
+        settings = json.load(f)
+    
+    settings[str(guild.id)] = {}
+    settings[str(guild.id)]["prefix"] = '?'
+    settings[str(guild.id)]["fun"] = 'False'
+    settings[str(guild.id)]["admin"] = 'False'
+    settings[str(guild.id)]["banwords"] = []
 
-    prefixes[str(guild.id)] = '?'
-
-    with open('prefixes.json', 'w') as f:
-        json.dump(prefixes, f, indent = 4)
+    with open('settings.json', 'w') as f:
+        json.dump(settings, f, indent = 4)
 
 @client.event
 async def on_guild_remove(guild):
-    with open('prefixes.json','r') as f:
-        prefixes = json.load(f)
+    with open('settings.json','r') as f:
+        settings = json.load(f)
 
-    prefixes.pop(str(guild.id))
+    settings.pop(str(guild.id))
     
-    with open('prefixes.json','w') as f:
-        json.dump(prefixes, f, indent = 4)
+    with open('settings.json','w') as f:
+        json.dump(settings, f, indent = 4)
 
 @client.command(aliases=['prefix'])
 @commands.has_permissions(manage_guild=True) 
 async def changeprefix(ctx, prefix):
     """Permet de changer le préfixe"""
-    with open('prefixes.json','r') as f:
-        prefixes = json.load(f)
+    with open('settings.json','r') as f:
+        settings = json.load(f)
 
-    prefixes[str(ctx.guild.id)] = prefix
+    settings[str(ctx.guild.id)]['prefix'] = prefix
 
-    with open('prefixes.json','w') as f:
-        json.dump(prefixes, f, indent = 4)
+    with open('settings.json','w') as f:
+        json.dump(settings, f, indent = 4)
     await ctx.message.delete()
     try :
-        embed=discord.Embed(title='Préfix changé', color=0x00ff40)
+        embed=discord.Embed(title='Préfix changé', color=0x00ff00)
         embed.add_field(name=f"--------------------------------------", value=f"Le préfixe est désormais : {prefix}", inline=True)
         await ctx.send(embed=embed)
     except :
         await ctx.send(f'Le préfixe est désormais {prefix}')
-
-@client.command()
-@commands.is_owner()
-async def load(ctx, extension):
-    """Permet de charger une extension"""
-    await ctx.message.delete()
-    try :
-        client.load_extension(f'cogs.{extension}')
-    except : 
-        try :
-            embed=discord.Embed(title='Extension non chargée', color=0xff0000)
-            embed.add_field(name=f"L'extension sivante n'a pas pu être chargée.", value=f"{extension}", inline=True)
-            await ctx.send(embed=embed)
-        except :
-            await ctx.send(f"L'extension {extension} n'a pas pu être chargée.")
-        return
-    try :
-        embed=discord.Embed(title='Extension chargée', color=0x00ff40)
-        embed.add_field(name=f"L'extension sivante est désormais chargée.", value=f"{extension}", inline=True)
-        await ctx.send(embed=embed)
-    except :
-        await ctx.send(f"L'extension {extension} est désormais chargée.")
-
-@client.command()
-@commands.is_owner()
-async def loadall(ctx):
-    """Permet de charger toutes les extensions"""
-    await ctx.message.delete()
-    for filename in os.listdir('./cogs'):
-        if filename.endswith('.py'):
-            client.load_extension(f'cogs.{filename[:-3]}')
-    try : 
-        embed=discord.Embed(title='Extensions chargées', color=0x00ff40)
-        embed.add_field(name=f"----------------------------------------------", value='Toutes les extensions ont été chargées.', inline=True)
-        await ctx.send(embed=embed)
-    except :
-        await ctx.send('Toutes les extensions ont été chargées.')
 
 @client.command()
 @commands.is_owner()
@@ -120,64 +93,75 @@ async def reload(ctx, extension):
             await ctx.send(f"L'extension {extension} n'a pas pu être rechargée.")
         return
     try :
-        embed=discord.Embed(title='Extension rechargée', color=0x00ff40)
+        embed=discord.Embed(title='Extension rechargée', color=0x00ff00)
         embed.add_field(name=f"L'extension suivante a été rechargée.", value=f"{extension}", inline=True)
         await ctx.send(embed=embed)
     except :
         await ctx.send(f"L'extension {extension} a été rechargée.")
 
 @client.command()
-@commands.is_owner()
-async def reloadall(ctx):
-    """Permet de recharger toutes les extensions"""
+@commands.has_permissions(manage_guild=True)
+async def activate(ctx, extension):
+    """Permet d'activer une extension"""
     await ctx.message.delete()
-    for filename in os.listdir('./cogs'):
-        if filename.endswith('.py'):
-            client.unload_extension(f'cogs.{filename[:-3]}')
-            client.load_extension(f'cogs.{filename[:-3]}')
-    try :
-        embed=discord.Embed(title='Extensions rechargées', color=0x00ff40)
-        embed.add_field(name=f"------------------------------------------------", value=f"Toutes les extensions ont été rechargées.", inline=True)
-        await ctx.send(embed=embed)
-    except :
-        await ctx.send('Toutes les extensions ont été rechargées.')
+    if extension in extensionslist :
+        with open('settings.json','r') as f:
+            settings = json.load(f)
+        settings[str(ctx.guild.id)][extension] = "True"
+        with open('settings.json','w') as f:
+            json.dump(settings, f, indent = 4)
 
-@client.command()
-@commands.is_owner()
-async def unload(ctx, extension):
-    """Permet de décharger une extension"""
-    await ctx.message.delete()
-    try :
-        client.unload_extension(f'cogs.{extension}')
-    except :
+    else : 
         try :
-            embed=discord.Embed(title='Extension non déchargée', color=0xff0000)
-            embed.add_field(name=f"L'extension sivante n'a pas pu être déchargée.", value=f"{extension}", inline=True)
+            embed=discord.Embed(title='Extension non activée', color=0xff0000)
+            embed.add_field(name=f"L'extension sivante n'a pas pu être activée.", value=f"{extension}", inline=True)
             await ctx.send(embed=embed)
         except :
-            await ctx.send(f"L'extension {extension} n'a pas pu être déchargée.")
+            await ctx.send(f"L'extension {extension} n'a pas pu être activée.")
         return
+    
     try :
-        embed=discord.Embed(title='Extension déchargée', color=0x00ff40)
-        embed.add_field(name=f"L'extension suivante a été déchargée.", value=f"{extension}", inline=True)
+        embed=discord.Embed(title='Extension activée', color=0x00ff00)
+        embed.add_field(name=f"L'extension sivante est désormais activée.", value=f"{extension}", inline=True)
         await ctx.send(embed=embed)
     except :
-        await ctx.send(f"L'extension {extension} a été déchargée.")
+        await ctx.send(f"L'extension {extension} est désormais activée.")
 
 @client.command()
-@commands.is_owner()
-async def unloadall(ctx):
-    """Permet de décharger toutes les extensions"""
+@commands.has_permissions(manage_guild=True)
+async def desactivate(ctx, extension):
+    """Permet de désactiver une extension"""
     await ctx.message.delete()
-    for filename in os.listdir('./cogs'):
-        if filename.endswith('.py'):
-            client.unload_extension(f'cogs.{filename[:-3]}')
+    if extension in extensionslist :
+        with open('settings.json','r') as f:
+            settings = json.load(f)
+        settings[str(ctx.guild.id)][extension] = "False"
+        with open('settings.json','w') as f:
+            json.dump(settings, f, indent = 4)
+
+    else : 
+        try :
+            embed=discord.Embed(title='Extension non désactivée', color=0xff0000)
+            embed.add_field(name=f"L'extension sivante n'a pas pu être désactivée.", value=f"{extension}", inline=True)
+            await ctx.send(embed=embed)
+        except :
+            await ctx.send(f"L'extension {extension} n'a pas pu être désactivée.")
+        return
+    
     try :
-        embed=discord.Embed(title='Extensions déchargées', color=0x00ff40)
-        embed.add_field(name=f"-------------------------------------------------", value=f"Toutes les extensions ont été déchargées.", inline=True)
+        embed=discord.Embed(title='Extension désactivée', color=0x00ff00)
+        embed.add_field(name=f"L'extension sivante est désormais désactivée.", value=f"{extension}", inline=True)
         await ctx.send(embed=embed)
     except :
-        await ctx.send('Toutes les extensions ont été déchargées.')
+        await ctx.send(f"L'extension {extension} est désormais désactivée.")
+
+
+
+
+
+
+
+
 
 @client.command()
 async def server_info(ctx):
