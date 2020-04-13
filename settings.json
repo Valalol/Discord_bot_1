@@ -1,0 +1,10 @@
+{
+    "698784472556109915": {
+        "prefix": "!",
+        "fun": "False",
+        "admin": "False",
+        "banwords": [
+            "hey"
+        ]
+    }
+}
