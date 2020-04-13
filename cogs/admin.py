@@ -214,6 +214,18 @@ class Commandes_Admin(commands.Cog):
         except :
             await ctx.send(f'{word} a été ajouté aux mots bloqués par {ctx.message.author}.')
     
+    @banword.error
+    async def banword_error(self, ctx, error):
+        if isinstance (error, commands.MissingRequiredArgument):
+            try :
+                embed=discord.Embed(title='Utilisateur non spécifié', color=0xC0C0C0)
+                embed.add_field(name=f"Pour l'utilisation correcte de cette commande,", value=f"Tapez {ctx.prefix}help banword.", inline=True)
+                await ctx.send(embed=embed)
+            except :
+                await ctx.send(f"Veuillez spécifier l'utilisateur à expulser.\nPour l'utilisation correcte de cette commande, tapez {ctx.prefix}help banword.")
+        else:
+            print(error)
+    
     @commands.command()
     @commands.has_permissions(manage_messages=True) 
     async def unbanword(self, ctx, word):
@@ -233,6 +245,20 @@ class Commandes_Admin(commands.Cog):
         except :
             await ctx.send(f'{word} a été retiré des mots bloqués par {ctx.message.author}.')
         await ctx.message.delete()
+
+    @unbanword.error
+    async def unbanword_error(self, ctx, error):
+        if isinstance (error, commands.MissingRequiredArgument):
+            try :
+                embed=discord.Embed(title='Utilisateur non spécifié', color=0xC0C0C0)
+                embed.add_field(name=f"Pour l'utilisation correcte de cette commande,", value=f"Tapez {ctx.prefix}help unbanword.", inline=True)
+                await ctx.send(embed=embed)
+            except :
+                await ctx.send(f"Veuillez spécifier l'utilisateur à expulser.\nPour l'utilisation correcte de cette commande, tapez {ctx.prefix}help unbanword.")
+        else:
+            print(error)
+        
+
 
 def setup(client):
     client.add_cog(Commandes_Admin(client))
