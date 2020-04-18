@@ -1,5 +1,5 @@
-import discord, logging, json, os
-from discord.ext import commands
+import discord, logging, json, os,requests
+from discord.ext import commands, tasks
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -13,6 +13,17 @@ except :
     from dotenv import load_dotenv
     load_dotenv()
     TOKEN = os.getenv("DISCORD_TOKEN")
+
+try : 
+    settingsrequestsecretkey = os.environ['settingsrequestsecretkey']
+except : 
+    from dotenv import load_dotenv
+    load_dotenv()
+    settingsrequestsecretkey = os.getenv("settingsrequestsecretkey")
+
+settingsurl = 'https://api.jsonbin.io/b/5e9ae581435f5604bb43e091'
+
+settingsheaders = {'secret-key': settingsrequestsecretkey}
 
 extensionslist = ["admin", "fun"]
 
@@ -28,9 +39,25 @@ client = commands.Bot(command_prefix = get_prefix)
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
 
+    await client.change_presence(status=discord.Status.online, activity=discord.Game('avec les bots Discord'))
+
+    settingsrequest = requests.get(settingsurl+'/latest', headers=settingsheaders)
+
+    with open('settings.json', 'w') as f:
+        json.dump(settingsrequest.json(), f, indent = 4)
+
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
             client.load_extension(f'cogs.{filename[:-3]}')
+
+@tasks.loop(hours=1.0)
+async def saver():
+    with open('settings.json','r') as f:
+        settings = json.load(f)
+        requests.put(settingsurl, json=settings, headers=settingsheaders)
+    print('updated')
+
+saver.start()
 
 @client.event
 async def on_guild_join(guild):
